@@ -1,0 +1,55 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Stores user preferences and settings for the river monitor app.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "The user's Firebase Auth UID."
+        },
+        "defaultSiteId": {
+          "type": "string",
+          "description": "The ID of the user's default river monitoring site."
+        },
+        "alerts": {
+          "type": "array",
+          "description": "The user's custom alerts.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "parameter": { "type": "string" },
+              "condition": { "type": "string" },
+              "value": { "type": "number" }
+            },
+            "required": ["id", "name", "parameter", "condition", "value"]
+          }
+        },
+        "favorites": {
+          "type": "array",
+          "description": "The user's favorite river monitoring sites.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "customName": { "type": "string" },
+              "notes": { "type": "string" }
+            },
+            "required": ["id", "name"]
+          }
+        }
+      },
+      "required": ["uid"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Stores user profiles containing preferences like default site, alerts, and favorites."
+    }
+  }
+}

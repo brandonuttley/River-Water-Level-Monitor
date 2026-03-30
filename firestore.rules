@@ -1,0 +1,31 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Check if the user is authenticated
+    function isAuthenticated() {
+       return request.auth != null;
+    }
+    
+    // Check if user owns the resource
+    function isOwner(userId) {
+       return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Validate UserProfile
+    function isValidUserProfile() {
+      let data = request.resource.data;
+      return data.keys().hasOnly(['uid', 'defaultSiteId', 'alerts', 'favorites']) &&
+             data.uid == request.auth.uid &&
+             (!('defaultSiteId' in data) || (data.defaultSiteId is string && data.defaultSiteId.size() <= 50)) &&
+             (!('alerts' in data) || (data.alerts is list && data.alerts.size() <= 100)) &&
+             (!('favorites' in data) || (data.favorites is list && data.favorites.size() <= 100));
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUserProfile();
+      allow update: if isOwner(userId) && isValidUserProfile() && request.resource.data.uid == resource.data.uid;
+      allow delete: if isOwner(userId);
+    }
+  }
+}

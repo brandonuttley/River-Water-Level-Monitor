@@ -1,0 +1,5 @@
+{
+  "name": "River Water Level Monitor",
+  "description": "Real-time river flow and depth monitoring using USGS data, featuring the South Fork @ Lowell station.",
+  "requestFramePermissions": []
+}
